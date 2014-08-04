@@ -12,7 +12,7 @@ var itemsToThrow, numberOfHits;
 
 var canvas, stage, queue, context;
 var gameState;
-var startButton, instructionsButton, restartButton;
+var startButton, instructionsButton, restartButton, creditsButton, creditsScreen;
 var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat, easterHit, easterBackdrop;
 var gameLevelNumber;
 var gameOver, score, scoreText;
@@ -23,9 +23,9 @@ var mouseX, mouseY, mousePositionText;
 
 var powerText, angleText, userAngle, userPower;
 
-var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection;
+var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection, grandma, grandmaTarget, flyer, flyerTarget;
 
-var itemToChuck, powerUp, cupCake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
+var itemToChuck, powerUp, cupCake, giantCupcake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
 
 var walkingDirection;
 
@@ -33,7 +33,7 @@ var splat, isMuted;
 
 var gameOver, timeLimit = 120;
 
-var jamieMode, paused, ammoBar, ammoBarWidth;
+var jamieMode, easterMode, paused, ammoBar, ammoBarWidth;
 
 var score;//High score persistance if time available 
 
@@ -52,6 +52,18 @@ function openCanvas() {
     context = canvas.getContext("2d");
     stage = new createjs.Stage(canvas);
 
+}
+
+function drawCreditsScreen() {
+    //stage.removeAllChildren();
+    creditsScreen.x = 0;
+    creditsScreen.y = 0;
+    
+    restartButton.x = 500;
+    restartButton.y = 500;
+    
+    stage.addChild(creditsScreen);
+    stage.addChild(restartButton);
 }
 
 function drawTitleScreen() {
@@ -185,9 +197,9 @@ function drawInstructionsScreen() {
 
     stage.addChild(instructionsScreen);
 //    stage.addChild(text);
-    stage.addChild(text2);
-    stage.addChild(text3);
-    stage.addChild(text4);
+//    stage.addChild(text2);
+//    stage.addChild(text3);
+//    stage.addChild(text4);
     stage.addChild(startButton);
 }
 
@@ -202,9 +214,10 @@ function drawGameScreen() {
         drawWalker();
     }
 
-    grumpyCat.x = 590;
-    grumpyCat.y = 410;
-    stage.addChild(grumpyCat);
+    grandma.x = 630;
+    grandma.y = 410;
+	randStartTarget();
+    stage.addChild(grandma);
     
     easterHit.x = 0;
     easterHit.y = 5;
@@ -217,7 +230,7 @@ function drawGameScreen() {
     startMovingWalker();
     displayItemToChuck();
 	displayPlayer();
-    if(gameLevelNumber === 5){
+    if(gameLevelNumber === 5 || gameLevelNumber === 4){
         movingWalker.visible = true;
     }
 }
@@ -239,12 +252,15 @@ function drawGameOverScreen() {
 
     restartButton.x = 500;
     restartButton.y = 500;
-
+    
+    creditsButton.x = 600;
+    creditsButton.y = 500;
 
     stage.addChild(gameOverScreen);
 //    stage.addChild(text);
     stage.addChild(finalScoreText);
     stage.addChild(restartButton);
+    stage.addChild(creditsButton);
 }
 
 function drawWinScreen() {
@@ -259,9 +275,13 @@ function drawWinScreen() {
 
     restartButton.x = 500;
     restartButton.y = 500;
+    
+    creditsButton.x = 600;
+    creditsButton.y = 500;
 
     stage.addChild(winScreen);
     stage.addChild(finalScoreText);
+    stage.addChild(creditsButton);
     stage.addChild(restartButton);
 }
 
@@ -271,17 +291,19 @@ fileManifest = [
                 {src:"img/startButton.jpg", id:"startButton"},
                 {src:"img/instructionsButton.jpg", id:"instructionsButton"},
                 {src:"img/restartButton.jpg", id:"restartButton"},
+                {src:"img/creditsButton.jpg", id:"creditsButton"},
                 {src:"img/gameScreen.jpg", id:"gameScreen"},
                 {src:"img/gameOver_revised.png", id:'gameOverScreen'},
+                {src:"img/credits.png", id:'creditsScreen'},
                 {src:"img/sprites.png", id:"mySprites"},
                 {src:"img/gameBackdrop.png", id:"backDrop1"},
                 {src:"img/grumpyCat3.png", id:"grumpyCat"},
-                {src:"img/tempCupCake.png", id:"cupCake"},
+                {src:"img/cupcake.png", id:"cupCake"},
+                {src:"img/giantCupcake.png", id:"giantCupcake"},
                 {src:"img/win_revised.png", id:"winScreen"},
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
                 {src:"img/easterHit.png", id:"easterHit"},
                 {src:"img/easterBackdrop.png", id:"easterBackdrop"},
-                {src:"img/WinScreen.png", id:"winScreen"},
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
 				{src:"img/PlayerBody.png", id:"playerBody"},
 				{src:"img/Aiming.png", id:"aiming"},
@@ -289,7 +311,8 @@ fileManifest = [
                 {src:"audio/splat.wav", id:"splat"},
                 {src:"audio/launch.wav", id:"launch"},
                 {src:"audio/GeorgeStreet.mp3", id:"georgeStreet"},
-
+				{src:"img/grandma.png", id:"grandma"},
+				{src:"img/oldFlyer.png", id:"flyer"},
 
     
             ];
@@ -325,6 +348,10 @@ function handleButtonClick() {
             powerUpSpeed = 6;
             stage.removeChild(walker);
         });
+    
+    creditsButton.addEventListener("click", function (event){
+        drawCreditsScreen();
+    });
 }
 
 function loadComplete(evt) {
@@ -333,11 +360,14 @@ function loadComplete(evt) {
     startButton = new createjs.Bitmap(queue.getResult("startButton"));
     instructionsButton = new createjs.Bitmap(queue.getResult("instructionsButton"));
     restartButton = new createjs.Bitmap(queue.getResult("restartButton"));
+    creditsButton = new createjs.Bitmap(queue.getResult("creditsButton"));
     gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
+    creditsScreen = new createjs.Bitmap(queue.getResult("creditsScreen"));
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    giantCupcake = new createjs.Bitmap(queue.getResult("giantCupcake"));
     gingerBread = new createjs.Bitmap(queue.getResult("gingerBread"));
     winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
     easterHit = new createjs.Bitmap(queue.getResult("easterHit"));
@@ -350,30 +380,23 @@ function loadComplete(evt) {
 	containShot = new createjs.Container();
 	containShot.addChild(refPoint, aimer);
 
-    // var blockSheet = new createjs.SpriteSheet({
-    //     images: [queue.getResult("mySprites")],
-    //     frames: [[0,0,32,32,0,16,16],[32,0,32,32,0,16,16],[64,0,32,32,0,16,16],[96,0,32,32,0,16,16],[128,0,32,32,0,16,16]]
-    //     });
-
-    // blocks = new createjs.Sprite(blockSheet);
-
-    // var walkSheet = new createjs.SpriteSheet({
-    //     images: [queue.getResult("mySprites")],
-    //     frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
-    //     animations: {
-    //         standRight: [0, 0, "standRight"],
-    //         walkRight: [1, 12, "walkRight", 0.5],
-    //         standLeft: [13, 13, "standLeft"],
-    //         walkLeft: [14, 25, "walkLeft", 0.5]
-    //         }     
-    //     });
-    
-    // walk = new createjs.Sprite(walkSheet);
+    var grandmaTarget = new createjs.SpriteSheet({
+        images: [queue.getResult("flyer")],
+        frames: [[0,0,140,254,0,56.85,145.75],[0,0,140,254,0,56.85,145.75],[0,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[560,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[840,0,140,252,0,56.85,144.75]],
+        animations: {
+            standRight: [0, 0, "standRight"],
+            idleRight: [1, 24, "idleRight", 0.5]
+            }     
+        });
+		
+	grandma = new createjs.Sprite(grandmaTarget);
+	
+	grandma.gotoAndPlay("idleRight");
 
     handleButtonClick();
     initMouseCords();
     spriteX = 50;
-    spriteY = 450;
+    spriteY = 400;
     // mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
     itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
@@ -417,13 +440,13 @@ var container;
 function displayPlayer()
 {
 	player.x = 40;
-	player.y = 500;
+	player.y = 460;
 	stage.addChild(player);
 	
-	aimer.x = 80;
-	aimer.y = 520;
-	aimer.regX = 72;
-	aimer.regY = 80;
+	aimer.x = 95;
+	aimer.y = 475;
+	aimer.regX = 80;
+	aimer.regY = 68;
 	stage.addChild(aimer);
 	
 }
@@ -441,6 +464,10 @@ function selectRandomItem() {
     var rand = Math.floor(Math.random()* 10);
     if(rand < 5){
         itemToChuck = cupCake;
+        if(easterMode)
+        {
+            itemToChuck = giantCupcake;
+        }
     }
     else if(rand > 5){
         itemToChuck = gingerBread;
@@ -577,15 +604,15 @@ function handleMouseMove(event)
 		
 		if(userAngle <= 90)
 		{
-			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+			aimer.setTransform(95,475,1,1,throwAngle,0,0,80,68);
 		}
 		else if(userAngle >90 && userAngle < 270)
 		{
-			aimer.setTransform(110,520,1,-1,throwAngle,0,0,72,80);
+			aimer.setTransform(115,475,1,-1,throwAngle,0,0,80,68);
 		}
 		else if(userAngle > 270 && userAngle <= 360)
 		{
-			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+			aimer.setTransform(95,475,1,1,throwAngle,0,0,80,68);
 		}
 		
 		powerText.x = mouseX + 5;
@@ -614,6 +641,7 @@ function init() {
     loadFiles();
     gameOver = false;
     jamieMode = false;
+    easterMode = false;
     //walkingDirection = "walkRight";
     
 
@@ -677,6 +705,7 @@ function handleKeyUp(event) {
                 jamieMode = true;
                 //var storeItemCount = itemsToThrow;
                 itemsToThrow = 1000000;
+    
             }
             upDateAmmoBar();
             break;
@@ -806,7 +835,7 @@ function updateItemTossedMovement() {
 
 function checkForCollision() {
     var powerUpDetected = ndgmr.checkPixelCollision(powerUp, itemToChuck);
-    var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
+    var collision = ndgmr.checkPixelCollision(grandma,itemToChuck);
     var easterCollision = ndgmr.checkRectCollision(easterHit,itemToChuck);
     var walkerCollision = ndgmr.checkPixelCollision(walker, itemToChuck);
     var movingWalkerCollision = ndgmr.checkPixelCollision(movingWalker, itemToChuck);
@@ -817,7 +846,7 @@ function checkForCollision() {
         displayItemToChuck();
         createjs.Sound.play('splat');
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         gameState = IN_GAME;
     }
 
@@ -826,7 +855,7 @@ function checkForCollision() {
         displayItemToChuck();
         createjs.Sound.play('splat');
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         gameState = IN_GAME;
     }
 
@@ -836,7 +865,7 @@ function checkForCollision() {
             createjs.Sound.play('splat');
             itemsToThrow += 2;
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
             score++;
@@ -846,7 +875,7 @@ function checkForCollision() {
     }
     if( collision ){
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
             createjs.Sound.play('splat');
@@ -855,13 +884,14 @@ function checkForCollision() {
 
     }
     if(easterCollision){
+        easterMode = true;
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         stage.addChild(easterBackdrop);
 		stage.setChildIndex(easterBackdrop,1);
-        grumpyCat.x = 590;
-        grumpyCat.y = 410;
-        stage.addChild(grumpyCat);
+        grandmaTarget.x = 630;
+        grandmaTarget.y = 410;
+        stage.addChild(grandmaTarget);
         stage.removeChild(powerUp);
         startPowerUp();
         drawAmmoBar();
@@ -871,14 +901,14 @@ function checkForCollision() {
          if ( itemToChuck.y + 45 >= canvas.height ) {
             createjs.Sound.play('splat');
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
          }
          if ( itemToChuck.x + 50 >= canvas.width || itemToChuck.x < 0){
             createjs.Sound.play('splat');
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
            } 
@@ -921,6 +951,18 @@ function moveMovingWalker() {
     movingWalker.y = movingWalkerY;
 }
 
+function randStartTarget()
+{
+	var rand;
+	rand = Math.floor(Math.random()* 500);
+	console.log(rand);
+	if(rand < 230)
+	{
+		rand += 170;
+	}
+		grandma.y = rand;
+	
+}
 
 function resetGame() {
     score = 0;
@@ -932,6 +974,8 @@ function resetGame() {
 
 
 function goToNextLevel() {
+    jamieMode = false;
+    easterMode = false;
     numberOfHits = 0;
     gameLevelNumber++;
     powerUpSpeed += 2;
