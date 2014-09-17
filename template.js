@@ -15,48 +15,44 @@ var numberSequence = [];
 var displayedNumer, currentSequenceLength;
 var selectedNumber, selectedSpotInArray, totalCorrectInSequence;
 
-var walk, blocks, blockArray, spriteX, spriteY;
-
-var walkingDirection;
-
 var gameOver;
 
 blockArray = [];
 
 function openCanvas() {
-	
-	var canvas = document.getElementById('game');
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	context = canvas.getContext("2d");
-	stage = new createjs.Stage(canvas);
+    
+    var canvas = document.getElementById('game');
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    context = canvas.getContext("2d");
+    stage = new createjs.Stage(canvas);
 }
 
 function drawTitleScreen() {
-	titleScreen.x = 0;
-	titleScreen.y = 0;
+    titleScreen.x = 0;
+    titleScreen.y = 0;
 
-	var text = new createjs.Text("The Numbers", "50px Arial", "#253742"); 
-	text.x = 270; 
-	text.y = 100;
-	text.textBaseline = "alphabetic";
+    var text = new createjs.Text("The Numbers", "50px Arial", "#253742"); 
+    text.x = 270; 
+    text.y = 100;
+    text.textBaseline = "alphabetic";
 
-	startButton.x = 500;
-	startButton.y = 500;
+    startButton.x = 500;
+    startButton.y = 500;
     instructionsButton.x = 600;
     instructionsButton.y = 500;
 
-	stage.addChild(titleScreen);
-	stage.addChild(text);
-	stage.addChild(startButton);
-    stage.addChild(instructionsButton);
-	
+    stage.addChild(titleScreen);
+    stage.addChild(text);
+    stage.addChild(startButton);
+    // stage.addChild(instructionsButton);
+    
 }
 
 function drawInstructionsScreen() {
     stage.removeAllChildren();
-	instructionsScreen.x = 0;
-	instructionsScreen.y = 0;
+    instructionsScreen.x = 0;
+    instructionsScreen.y = 0;
 
     var text = new createjs.Text("Instructions", "50px Arial", "#EFC94C"); 
     text.x = 270; 
@@ -66,15 +62,15 @@ function drawInstructionsScreen() {
     startButton.y = 500;
 
 
-	stage.addChild(instructionsScreen);
+    stage.addChild(instructionsScreen);
     stage.addChild(text);
     stage.addChild(startButton);
 }
 
 function drawGameScreen() {
     stage.removeAllChildren();
-	gameScreen.x = 0;
-	gameScreen.y = 0;
+    gameScreen.x = 0;
+    gameScreen.y = 0;
 
     number1.x = 190;
     number1.y = 380;
@@ -202,26 +198,26 @@ function drawGameScreen() {
 
 function drawGameOverScreen() {
     stage.removeAllChildren();
-	gameOverScreen.x = 0;
-	gameOverScreen.y = 0;
+    gameOverScreen.x = 0;
+    gameOverScreen.y = 0;
 
-	var text = new createjs.Text("Game Over", "50px Arial", "#253742"); 
-	text.x = 270; 
-	text.y = 100;
-	text.textBaseline = "alphabetic";
+    var text = new createjs.Text("Game Over", "50px Arial", "#253742"); 
+    text.x = 270; 
+    text.y = 100;
+    text.textBaseline = "alphabetic";
 
-	var finalScoreText = new createjs.Text("Final Score: "+ getScore(), "30px Arial", "#253742"); 
-	finalScoreText.x = 300; 
-	finalScoreText.y = 200;
-	finalScoreText.textBaseline = "alphabetic";
+    var finalScoreText = new createjs.Text("Final Score: "+ getScore(), "30px Arial", "#253742"); 
+    finalScoreText.x = 300; 
+    finalScoreText.y = 200;
+    finalScoreText.textBaseline = "alphabetic";
 
     restartButton.x = 500;
     restartButton.y = 500;
 
 
-	stage.addChild(gameOverScreen);
-	stage.addChild(text);
-	stage.addChild(finalScoreText);
+    stage.addChild(gameOverScreen);
+    stage.addChild(text);
+    stage.addChild(finalScoreText);
     stage.addChild(restartButton);
 }
 
@@ -266,8 +262,8 @@ function loadFiles() {
 }
 function handleButtonClick() {
     startButton.addEventListener("click", function (event){
-    		gameState = CREATE_GAME;
-    	});
+            gameState = CREATE_GAME;
+        });
 
     instructionsButton.addEventListener("click", function (event){
             gameState = INSTRUCTIONS;
@@ -406,17 +402,17 @@ function handleButtonClick() {
 }
 
 function checkForCorrectNumber() {
-    console.log('spot in array: '+selectedSpotInArray);
-    console.log('correct Answer: '+numberSequence[selectedSpotInArray]);
+    // console.log('spot in array: '+selectedSpotInArray);
+    // console.log('correct Answer: '+numberSequence[selectedSpotInArray]);
     if(selectedNumber !== numberSequence[selectedSpotInArray]) {
         gameState = GAME_OVER;
     } else {
         totalCorrectInSequence++;
-        console.log('correct!!!');
+        // console.log('correct!!!');
         selectedSpotInArray++;
     }
-    console.log('total correct = '+totalCorrectInSequence);
-    console.log('sequence length: '+ currentSequenceLength);
+    // console.log('total correct = '+totalCorrectInSequence);
+    // console.log('sequence length: '+ currentSequenceLength);
     if(totalCorrectInSequence === currentSequenceLength) {
         currentSequenceLength++;
         totalCorrectInSequence = 0;
@@ -424,18 +420,18 @@ function checkForCorrectNumber() {
         hideNumberPad();
         gameState = DISPLAYING_NUMBERS;
         displayNumbers();
-        console.log('spot in array after correct: '+selectedSpotInArray);
+        // console.log('spot in array after correct: '+selectedSpotInArray);
     }
 }
 
 function loadComplete(evt) {
-	titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
-	instructionsScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
-	startButton = new createjs.Bitmap(queue.getResult("startButton"));
+    titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
+    instructionsScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
+    startButton = new createjs.Bitmap(queue.getResult("startButton"));
     instructionsButton = new createjs.Bitmap(queue.getResult("instructionsButton"));
     restartButton = new createjs.Bitmap(queue.getResult("restartButton"));
-	gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
-	gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
+    gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
+    gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
     number1 = new createjs.Bitmap(queue.getResult('number1'));
     number2 = new createjs.Bitmap(queue.getResult('number2'));
     number3 = new createjs.Bitmap(queue.getResult('number3'));
@@ -462,18 +458,18 @@ function loadComplete(evt) {
 
 
 
-	handleButtonClick();
-	initMouseCords();
+    handleButtonClick();
+    initMouseCords();
     selectedSpotInArray = 0;
     currentSequenceLength = 1;
     totalCorrectInSequence = 0;
-	spriteX = 400;
+    spriteX = 400;
     spriteY = 600;
-	mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
-	scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
+    mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
+    scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
     drawScore();
     generateRandomArray();
-	startLoop();
+    startLoop();
 }
 
 
@@ -487,7 +483,7 @@ function init() {
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
-	
+    
 }
 
 function handleKeyDown(event) {
@@ -534,31 +530,31 @@ function handleKeyUp(event) {
 }
 
 function initMouseCords() {
-	stage.on("stagemousemove", function(evt) {
+    stage.on("stagemousemove", function(evt) {
 
-	    mouseX = evt.stageX;
-	    mouseY = evt.stageY;
+        mouseX = evt.stageX;
+        mouseY = evt.stageY;
 
-	});	
+    }); 
 }
 
 function drawMouseCords() {
-	mousePositionText.x = 20;
-	mousePositionText.y = 15;
-	stage.addChild(mousePositionText);
+    mousePositionText.x = 20;
+    mousePositionText.y = 15;
+    stage.addChild(mousePositionText);
 }
 
 
 function drawScore() {
-	
-	scoreText.x = 700; 
-	scoreText.y = 15;
+    
+    scoreText.x = 700; 
+    scoreText.y = 15;
 
-	stage.addChild(scoreText);
+    stage.addChild(scoreText);
 }
 
 function drawLevelSign() {
-	var gameLevel = new createjs.Shape();
+    var gameLevel = new createjs.Shape();
             gameLevel.graphics.setStrokeStyle(4, 'square', 'square');
             gameLevel.graphics.beginStroke(('#333'));
             gameLevel.graphics.beginFill("#EFC94C").drawRect(0,0,200, 200);
@@ -569,17 +565,17 @@ function drawLevelSign() {
             
 
     var level = new createjs.Text("Level", "30px Arial", "#253742");
-    	level.x = 65;
-    	level.y = 50;
+        level.x = 65;
+        level.y = 50;
 
     var levelNumber = new createjs.Text(gameLevelNumber, "35px Arial", "#253742");
-    	levelNumber.x = 90;
-    	levelNumber.y = 100;	
+        levelNumber.x = 90;
+        levelNumber.y = 100;    
 
     var levelContainer = new createjs.Container();
-    		levelContainer.x = 300;
-    		levelContainer.y = 800;
-    		levelContainer.addChild(gameLevel, level, levelNumber);
+            levelContainer.x = 300;
+            levelContainer.y = 800;
+            levelContainer.addChild(gameLevel, level, levelNumber);
 
             var tween = createjs.Tween.get(levelContainer, {loop:false})
                          .to({x:300, y:200}, 1500, createjs.Ease.bounceOut)
@@ -593,8 +589,8 @@ function drawLevelSign() {
 
 
 function resetGameTimer() {
-	timerCount = 0;
-	gameTimer = 0;
+    timerCount = 0;
+    gameTimer = 0;
 }
 
 function resetGame() {
@@ -608,10 +604,10 @@ function resetGame() {
 }
 
 function runGameTimer() {
-	timerCount += 1;
-	if (timerCount%(FPS/10) ===0 ) {
-		gameTimer = timerCount/(FPS);
-	}
+    timerCount += 1;
+    if (timerCount%(FPS/10) ===0 ) {
+        gameTimer = timerCount/(FPS);
+    }
 }
 
 function getScore() {
@@ -619,7 +615,7 @@ function getScore() {
 }
 
 function startGame() {
-	score = 0;
+    score = 0;
 }
 
 function generateRandomArray() {
@@ -714,22 +710,22 @@ function drawNumberPad() {
 }
 
 function startLoop() {
-	createjs.Ticker.addEventListener("tick", loop);
+    createjs.Ticker.addEventListener("tick", loop);
     createjs.Ticker.setFPS(FPS);
 }
 
 function main() {
-	init();
-	gameState = TITLE;
-	gameOver = false;
+    init();
+    gameState = TITLE;
+    gameOver = false;
 }
 
 function loop() {
-	//runGameTimer();
-	//mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
-	scoreText.text = "Score: " + getScore(); 
+    //runGameTimer();
+    //mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
+    scoreText.text = "Score: " + getScore(); 
     //console.log(gameState);
-	switch(gameState) {
+    switch(gameState) {
      //case CONSTRUCT:
        //construct();
        //gameState = HOLD;
@@ -774,8 +770,8 @@ function loop() {
 stage.update();
 }
 if( !!(window.addEventListener)) {
-	window.addEventListener ("DOMContentLoaded", main);
+    window.addEventListener ("DOMContentLoaded", main);
 
 }else{//MSIE
-	window.attachEvent("onload", main);
+    window.attachEvent("onload", main);
 }
