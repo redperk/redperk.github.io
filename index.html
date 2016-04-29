@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" charset="utf-8">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
-
+    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.core.min.js'>
+    </script>
 
 
   </head>
@@ -31,7 +32,7 @@
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-          
+
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
@@ -41,6 +42,10 @@
         <input type="text" class="form-control" id="stockSymbolInput" placeholder="Symbol">
         <span class="input-group-btn">
           <button class="btn btn-primary" type="button" id="symbolSubmitBtn">Go!</button>
+        </span>
+        <span class="input-group-btn">
+          <input type="file" id="file-input" />
+          <!-- <button class="btn btn-primary" type="button" id="importFileBtn">Import File</button> -->
         </span>
       </div>
     </div>
